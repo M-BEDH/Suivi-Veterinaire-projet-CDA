@@ -1,0 +1,9 @@
+apiVersion: 1
+
+providers:
+  - name: ASV
+    folder: ASV App
+    type: file
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
