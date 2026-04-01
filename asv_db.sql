@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql
--- Généré le : lun. 23 mars 2026 à 12:46
+-- Généré le : mer. 01 avr. 2026 à 08:16
 -- Version du serveur : 8.0.45
 -- Version de PHP : 8.3.26
 
@@ -28,15 +28,15 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `animals` (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT (uuid()),
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nom` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `espece` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `race` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_naissance` date DEFAULT NULL,
-  `remarques` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `proprietaire_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_by` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `remarques` longtext COLLATE utf8mb4_unicode_ci,
+  `proprietaire_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL,
   `clinic_id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -66,8 +66,8 @@ INSERT INTO `animals` (`id`, `nom`, `espece`, `race`, `date_naissance`, `remarqu
 CREATE TABLE `clinics` (
   `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` datetime NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-  `type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'clinique'
+  `created_at` datetime NOT NULL,
+  `type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -102,7 +102,9 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 ('DoctrineMigrations\\Version20260317000000', '2026-03-23 12:45:03', 35),
 ('DoctrineMigrations\\Version20260317000001', '2026-03-23 12:45:03', 48),
 ('DoctrineMigrations\\Version20260317000002', '2026-03-23 12:45:03', 58),
-('DoctrineMigrations\\Version20260318151137', '2026-03-23 12:45:03', 30);
+('DoctrineMigrations\\Version20260318151137', '2026-03-23 12:45:03', 30),
+('DoctrineMigrations\\Version20260328140532', '2026-03-31 15:23:18', 86),
+('DoctrineMigrations\\Version20260401080944', '2026-04-01 08:12:33', 468);
 
 -- --------------------------------------------------------
 
@@ -111,14 +113,14 @@ INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_
 --
 
 CREATE TABLE `medical_consultations` (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT (uuid()),
-  `animal_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `animal_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_consultation` datetime NOT NULL,
-  `veterinaire_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `motif` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `compte_rendu` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `traitements` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `veterinaire_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `motif` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `compte_rendu` longtext COLLATE utf8mb4_unicode_ci,
+  `traitements` longtext COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL,
   `clinic_id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -164,15 +166,15 @@ CREATE TABLE `messenger_messages` (
 --
 
 CREATE TABLE `owners` (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT (uuid()),
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nom` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `prenom` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `adresse` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `adresse` longtext COLLATE utf8mb4_unicode_ci,
   `telephone` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_by` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `user_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `clinic_id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -194,11 +196,11 @@ INSERT INTO `owners` (`id`, `nom`, `prenom`, `adresse`, `telephone`, `email`, `c
 --
 
 CREATE TABLE `users` (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT (uuid()),
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` enum('client','veterinaire','assistant') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `role` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `clinic_id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -235,16 +237,16 @@ INSERT INTO `users` (`id`, `email`, `name`, `role`, `created_at`, `password`, `c
 --
 ALTER TABLE `animals`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_animaux_proprietaire_id` (`proprietaire_id`),
-  ADD KEY `idx_animaux_created_by` (`created_by`),
-  ADD KEY `IDX_ANIMALS_CLINIC` (`clinic_id`);
+  ADD KEY `IDX_966C69DD76C50E4A` (`proprietaire_id`),
+  ADD KEY `IDX_966C69DDDE12AB56` (`created_by`),
+  ADD KEY `IDX_966C69DDCC22AD4` (`clinic_id`);
 
 --
 -- Index pour la table `clinics`
 --
 ALTER TABLE `clinics`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UNIQ_CLINICS_NAME` (`name`);
+  ADD UNIQUE KEY `UNIQ_D7053B665E237E06` (`name`);
 
 --
 -- Index pour la table `doctrine_migration_versions`
@@ -257,27 +259,25 @@ ALTER TABLE `doctrine_migration_versions`
 --
 ALTER TABLE `medical_consultations`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_consultations_animal_id` (`animal_id`),
-  ADD KEY `idx_consultations_veterinaire_id` (`veterinaire_id`),
-  ADD KEY `IDX_CONSULTATIONS_CLINIC` (`clinic_id`);
+  ADD KEY `IDX_F9050EB18E962C16` (`animal_id`),
+  ADD KEY `IDX_F9050EB15C80924` (`veterinaire_id`),
+  ADD KEY `IDX_F9050EB1CC22AD4` (`clinic_id`);
 
 --
 -- Index pour la table `messenger_messages`
 --
 ALTER TABLE `messenger_messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `IDX_75EA56E0FB7336F0` (`queue_name`),
-  ADD KEY `IDX_75EA56E0E3BD61CE` (`available_at`),
-  ADD KEY `IDX_75EA56E016BA31DB` (`delivered_at`);
+  ADD KEY `IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750` (`queue_name`,`available_at`,`delivered_at`,`id`);
 
 --
 -- Index pour la table `owners`
 --
 ALTER TABLE `owners`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_proprietaires_created_by` (`created_by`),
-  ADD KEY `idx_proprietaires_user_id` (`user_id`),
-  ADD KEY `IDX_OWNERS_CLINIC` (`clinic_id`);
+  ADD KEY `IDX_427292FADE12AB56` (`created_by`),
+  ADD KEY `IDX_427292FAA76ED395` (`user_id`),
+  ADD KEY `IDX_427292FACC22AD4` (`clinic_id`);
 
 --
 -- Index pour la table `users`
@@ -285,7 +285,7 @@ ALTER TABLE `owners`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uniq_user_email_clinic` (`email`,`clinic_id`),
-  ADD KEY `IDX_USERS_CLINIC` (`clinic_id`);
+  ADD KEY `IDX_1483A5E9CC22AD4` (`clinic_id`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -305,25 +305,25 @@ ALTER TABLE `messenger_messages`
 -- Contraintes pour la table `animals`
 --
 ALTER TABLE `animals`
-  ADD CONSTRAINT `FK_ANIMALS_CLINIC` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_animaux_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_animaux_proprietaire_id` FOREIGN KEY (`proprietaire_id`) REFERENCES `owners` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_966C69DD76C50E4A` FOREIGN KEY (`proprietaire_id`) REFERENCES `owners` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_966C69DDDE12AB56` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_ANIMALS_CLINIC` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`id`) ON DELETE SET NULL;
 
 --
 -- Contraintes pour la table `medical_consultations`
 --
 ALTER TABLE `medical_consultations`
-  ADD CONSTRAINT `fk_consultations_animal_id` FOREIGN KEY (`animal_id`) REFERENCES `animals` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_CONSULTATIONS_CLINIC` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_consultations_veterinaire_id` FOREIGN KEY (`veterinaire_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_F9050EB15C80924` FOREIGN KEY (`veterinaire_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_F9050EB18E962C16` FOREIGN KEY (`animal_id`) REFERENCES `animals` (`id`) ON DELETE SET NULL;
 
 --
 -- Contraintes pour la table `owners`
 --
 ALTER TABLE `owners`
-  ADD CONSTRAINT `FK_OWNERS_CLINIC` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_proprietaires_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_proprietaires_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_427292FAA76ED395` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_427292FADE12AB56` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_OWNERS_CLINIC` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`id`) ON DELETE SET NULL;
 
 --
 -- Contraintes pour la table `users`
