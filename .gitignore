@@ -10,10 +10,6 @@ monitoring/mysqld-exporter/.my.cnf
 backend/
 mobile-web/
 
-# Memo personnel
-Memo/
-ngrok/
 
 # Dossier personnel
-Remaining_asv/
-images_tests/
+docs/
