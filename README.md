@@ -7,8 +7,8 @@ Développée dans le cadre du titre professionnel **Concepteur Développeur d'Ap
 
 | Composant | Technologie | Repo |
 |---|---|---|
-| API REST | Symfony 7 / PHP 8.2 | [ASV-backend](https://github.com/M-BEDH/ASV-backend) (privé au moment de ce repo - version public à venir) |
-| Application web/mobile | Expo / React Native | [ASV-frontend](https://github.com/M-BEDH/ASV-frontend) (privé au moment de ce repo - version public à venir) |
+| API REST | Symfony 7 / PHP 8.2 | [ASV-backend](https://github.com/M-BEDH/ASV-backend) 
+| Application web/mobile | Expo / React Native | [ASV-frontend](https://github.com/M-BEDH/ASV-frontend) 
 | Infra | Docker Compose + Nginx | ce repo |
 
 ## Services Docker
@@ -42,9 +42,7 @@ docker compose up -d
 
 ## Documents
 
-Le dossier `docs/` contient les livrables du projet : (à venir)
-- Cahier des charges
+Le dossier `docs/` contient les livrables du projet : 
 - Diagrammes UML
 - Plan de tests
 - Plan de déploiement
-- Analyse sécurité

@@ -1,0 +1,353 @@
+' ============================================================
+' Diagramme de cas d'utilisation — ASV
+' Melissa BEDHOMME — RNCP37873 CDA — Mai 2026
+' ============================================================
+
+@startuml diagramme_cas_utilisation
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Visiteur\nnon connecté" as ANON
+actor "Responsable" as RESP
+actor "Vétérinaire" as VET
+actor "Assistant" as ASST
+actor "Bénévole" as BEN
+actor "Client" as CLIENT
+
+rectangle "Authentification (public)" {
+    usecase "S'inscrire\n(Flux A — responsable\nou Flux B — invitation)" as UC1
+    usecase "Se connecter" as UC2
+    usecase "Consulter son profil" as UC3
+}
+
+rectangle "Établissement" {
+    usecase "Modifier son établissement" as UC5
+}
+
+rectangle "Équipe" {
+    usecase "Ajouter un collaborateur" as UC18a
+    usecase "Supprimer un collaborateur" as UC18b
+}
+
+rectangle "Propriétaires" {
+    usecase "Créer un propriétaire" as UC6
+    usecase "Consulter un propriétaire" as UC7
+    usecase "Modifier un propriétaire" as UC8
+    usecase "Supprimer un propriétaire" as UC9
+}
+
+rectangle "Animaux" {
+    usecase "Créer un animal" as UC10
+    usecase "Consulter un animal" as UC11
+    usecase "Modifier un animal" as UC12
+    usecase "Supprimer un animal" as UC13
+}
+
+rectangle "Consultations médicales" {
+    usecase "Créer une consultation" as UC14
+    usecase "Consulter une consultation" as UC15
+    usecase "Modifier une consultation" as UC16
+    usecase "Supprimer une consultation" as UC17
+}
+
+' Visiteur
+ANON --> UC1
+ANON --> UC2
+
+' Responsable — accès complet
+RESP --> UC1
+RESP --> UC2
+RESP --> UC3
+RESP --> UC5
+RESP --> UC18a
+RESP --> UC18b
+RESP --> UC6
+RESP --> UC7
+RESP --> UC8
+RESP --> UC9
+RESP --> UC10
+RESP --> UC11
+RESP --> UC12
+RESP --> UC13
+RESP --> UC14
+RESP --> UC15
+RESP --> UC16
+RESP --> UC17
+
+' Vétérinaire — CRUD complet sauf gestion équipe/établissement
+VET --> UC1
+VET --> UC2
+VET --> UC3
+VET --> UC6
+VET --> UC7
+VET --> UC8
+VET --> UC9
+VET --> UC10
+VET --> UC11
+VET --> UC12
+VET --> UC13
+VET --> UC14
+VET --> UC15
+VET --> UC16
+VET --> UC17
+
+' Assistant — CRUD sauf suppression proprio et animal
+ASST --> UC1
+ASST --> UC2
+ASST --> UC3
+ASST --> UC6
+ASST --> UC7
+ASST --> UC8
+ASST --> UC10
+ASST --> UC11
+ASST --> UC12
+ASST --> UC14
+ASST --> UC15
+ASST --> UC16
+
+' Bénévole — lecture seule
+BEN --> UC1
+BEN --> UC2
+BEN --> UC3
+BEN --> UC7
+BEN --> UC11
+BEN --> UC15
+
+' Client — ses propres données
+CLIENT --> UC1
+CLIENT --> UC2
+CLIENT --> UC3
+CLIENT --> UC7
+CLIENT --> UC11
+CLIENT --> UC15
+
+@enduml
+
+
+' ============================================================
+' Diagramme de classes — ASV
+' Melissa BEDHOMME — RNCP37873 CDA — Mai 2026
+' ============================================================
+
+@startuml diagramme_classes
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam linetype ortho
+
+class Clinic {
+    +id : String <<UUID v4>>
+    +name : String
+    +type : String
+    +createdAt : DateTime
+}
+
+class User {
+    +id : String <<UUID v4>>
+    +email : String
+    +name : String
+    +role : String
+    +password : String [0..1]
+    +createdAt : DateTime
+    --
+    +login()
+    +register()
+    +anonymize()
+}
+
+class Owner {
+    +id : String <<UUID v4>>
+    +nom : String
+    +prenom : String
+    +adresse : String [0..1]
+    +telephone : String [0..1]
+    +email : String
+    +createdAt : DateTime
+    --
+    +anonymize()
+}
+
+class Animal {
+    +id : String <<UUID v4>>
+    +nom : String
+    +espece : String
+    +race : String [0..1]
+    +dateNaissance : Date [0..1]
+    +remarques : String [0..1]
+    +createdAt : DateTime
+}
+
+class MedicalConsultation {
+    +id : String <<UUID v4>>
+    +dateConsultation : DateTime
+    +motif : String
+    +compteRendu : String [0..1]
+    +traitements : String [0..1]
+    +createdAt : DateTime
+}
+
+' Staff : ManyToOne (clinic_id)
+Clinic "1" --> "0..*" User : emploie (staff)\n<<clinic_id>>
+
+' Client : ManyToMany via user_clinic
+Clinic "0..*" <--> "0..*" User : rattache (client)\n<<user_clinic>>
+
+' Owner : ManyToMany via owner_clinic
+Clinic "0..*" <--> "0..*" Owner : gère\n<<owner_clinic>>
+
+' Autres relations
+Clinic "1" --> "0..*" Animal : héberge\n<<clinic_id>>
+Clinic "1" --> "0..*" MedicalConsultation : contient\n<<clinic_id>>
+
+User "1" --> "0..*" Owner : crée\n<<created_by>>
+User "1" --> "0..1" Owner : compte client lié\n<<user_id>>
+
+User "1" --> "0..*" Animal : crée\n<<created_by>>
+User "1" --> "0..*" MedicalConsultation : effectue\n<<veterinaire_id>>
+
+Owner "1" --> "0..*" Animal : possède\n<<proprietaire_id>>
+Animal "1" --> "0..*" MedicalConsultation : fait l'objet de\n<<animal_id>>
+
+@enduml
+
+
+' ============================================================
+' Diagramme de séquence — Authentification JWT
+' Melissa BEDHOMME — RNCP37873 CDA — Mai 2026
+' ============================================================
+
+@startuml diagramme_sequence_auth
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceParticipantBorderColor #1E3A5F
+skinparam sequenceParticipantBackgroundColor #EAF2FB
+skinparam noteBackgroundColor #FFF9C4
+
+actor Utilisateur
+participant "Frontend\n(Expo/RN)" as Frontend
+participant "API Symfony" as API
+participant "AuthController" as Auth
+database "MySQL" as BDD
+
+Utilisateur -> Frontend : Saisit email + mot de passe
+Frontend -> API : POST /api/auth/login\n{email, password}
+API -> Auth : handle(request)
+Auth -> BDD : SELECT user WHERE email = ?
+BDD --> Auth : Retourne 0, 1 ou N Users
+
+alt Aucun compte trouvé
+    Auth --> Frontend : 401 Unauthorized
+    Frontend --> Utilisateur : "Identifiants invalides"
+
+else password = NULL (pré-compte non activé)
+    Auth --> Frontend : 403 Forbidden
+    Frontend --> Utilisateur : "Compte non activé"
+
+else N > 1 comptes (staff multi-établissements)
+    Auth --> Frontend : {requiresClinicSelection: true,\nclinics: [{id, name}]}
+    Frontend --> Utilisateur : Affiche sélecteur de clinique
+    Utilisateur -> Frontend : Choisit une clinique
+    Frontend -> API : POST /api/auth/login\n{email, password, clinicId}
+    API -> Auth : handle(request)
+    Auth -> BDD : SELECT user WHERE email = ?\nAND clinic_id = ?
+    BDD --> Auth : User ciblé
+    Auth -> Auth : Vérifie password (Argon2id)
+    Auth -> Auth : Génère JWT signé RS256\n{userId, email, role, clinicId}
+    Auth --> Frontend : 200 OK\n{token, user: {id, email, name, role, clinicId, clinicName}}
+    Frontend -> Frontend : Stocke token\n(AsyncStorage web / SecureStore mobile)
+    Frontend --> Utilisateur : Redirige vers tableau de bord
+
+else 1 compte trouvé (cas standard)
+    Auth -> Auth : Vérifie password (Argon2id)
+    Auth -> Auth : Génère JWT signé RS256\n{userId, email, role, clinicId/clinicIds[]}
+    Auth --> Frontend : 200 OK\n{token, user: {...}}
+    Frontend -> Frontend : Stocke token\n(AsyncStorage web / SecureStore mobile)
+    Frontend --> Utilisateur : Redirige vers tableau de bord
+end
+
+== Requête protégée ultérieure ==
+
+Utilisateur -> Frontend : Accède à une ressource protégée
+Frontend -> API : GET /api/animals\nAuthorization: Bearer <token>
+API -> Auth : Vérifie la signature\ncryptographique JWT\n(clé publique RS256)
+Auth -> Auth : Extrait userId + email\n+ role + clinicId
+Auth --> API : Utilisateur authentifié
+API -> BDD : SELECT * FROM animal\nWHERE clinic_id = ?
+BDD --> API : Données filtrées par clinique
+API --> Frontend : 200 OK + JSON
+Frontend --> Utilisateur : Affiche les données
+
+@enduml
+
+
+' ============================================================
+' Diagramme de séquence — Création d'une consultation médicale
+' Melissa BEDHOMME — RNCP37873 CDA — Mai 2026
+' ============================================================
+
+@startuml diagramme_sequence_consultation
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceParticipantBorderColor #1E3A5F
+skinparam sequenceParticipantBackgroundColor #EAF2FB
+skinparam noteBackgroundColor #FFF9C4
+
+actor Veterinaire
+participant "Frontend\n(Expo/RN)" as Frontend
+participant "API Symfony" as API
+participant "MedicalConsultation\nController" as Controller
+participant "AnimalRepository" as Repo
+database "MySQL" as BDD
+
+Veterinaire -> Frontend : Remplit le formulaire\n(motif, date, compte rendu,\ntraitements, animal)
+Frontend -> API : POST /api/consultations\nAuthorization: Bearer <token>\n{dateConsultation, motif,\ncompteRendu, traitements, animalId}
+
+API -> Controller : handle(request)
+Controller -> Controller : getUser() → extrait utilisateur connecté\n(userId, role, clinicId)
+
+alt Rôle non autorisé (bénévole ou client)
+    Controller --> API : 403 Forbidden
+    API --> Frontend : {error: "Accès refusé"}
+    Frontend --> Veterinaire : Affiche message d'erreur
+
+else Rôle autorisé (responsable / vétérinaire / assistant)
+    Controller -> Repo : findById(animalId)
+    Repo -> BDD : SELECT animal WHERE id = ?\n(avec jointure Owner + owner_clinic)
+    BDD --> Repo : Animal hydraté\n(+ Owner avec ses cliniques)
+    Repo --> Controller : Animal
+
+    alt Animal introuvable
+        Controller --> API : 404 Not Found
+        API --> Frontend : {error: "Animal non trouvé"}
+        Frontend --> Veterinaire : Affiche message d'erreur
+
+    else Animal trouvé → doShowAnimal()
+        note over Controller
+            Si animal.owner existe :
+              vérifie que owner.clinics
+              contient me.getClinic()
+              (ManyToMany owner_clinic)
+            Sinon :
+              vérifie animal.clinic_id
+              === me.clinic_id
+        end note
+
+        alt Accès refusé (clinique différente)
+            Controller --> API : 403 Forbidden
+            API --> Frontend : {error: "Accès refusé"}
+            Frontend --> Veterinaire : Affiche message d'erreur
+
+        else Accès autorisé
+            Controller -> Controller : Crée entité MedicalConsultation\n(UUID v4 auto-généré)\nLie à : animal, vétérinaire connecté, clinique
+            Controller -> BDD : INSERT INTO medical_consultation ...
+            BDD --> Controller : Consultation persistée
+            Controller --> API : 201 Created\n{id, dateConsultation, motif,\ncompteRendu, traitements,\nanimal{...}, veterinaire{...}}
+            API --> Frontend : 201 OK + JSON
+            Frontend --> Veterinaire : Affiche confirmation\net redirige vers la liste
+        end
+    end
+end
+
+@enduml
