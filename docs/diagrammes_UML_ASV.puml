@@ -131,88 +131,89 @@ CLIENT --> UC15
 ' Melissa BEDHOMME — RNCP37873 CDA — Mai 2026
 ' ============================================================
 
-@startuml diagramme_classes
+@startuml diagramme_classes                                                                                                                                                                        
+                                                                                                                                                                                                     
+  skinparam classAttributeIconSize 0                                                                                                                                                                 
+  skinparam classFontStyle bold                                                                                                                                                                      
+  skinparam backgroundColor #FAFAFA                                                                                                                                                                  
+  skinparam class {                                                                                                                                                                                  
+      BackgroundColor #EEF4FF                                                                                                                                                                        
+      BorderColor #4A6FA5                                                                                                                                                                            
+      HeaderBackgroundColor #4A6FA5                                                                                                                                                                  
+      HeaderFontColor #FFFFFF
+      ArrowColor #333333                                                                                                                                                                             
+  }
+  skinparam shadowing false                                                                                                                                                                          
+  skinparam roundcorner 8
 
-skinparam classAttributeIconSize 0
-skinparam classFontStyle bold
-skinparam linetype ortho
+  left to right direction
 
-class Clinic {
-    +id : String <<UUID v4>>
-    +name : String
-    +type : String
-    +createdAt : DateTime
-}
+  class Clinic {
+      +id : UUID
+      +name : String
+      +type : String
+      +createdAt : DateTime                                                                                                                                                                          
+  }
+                                                                                                                                                                                                     
+  class User {    
+      +id : UUID
+      +email : String
+      +name : String
+      +role : String
+      +password : String [0..1]
+      +createdAt : DateTime
+      --
+      +login()
+      +register()                                                                                                                                                                                    
+      +anonymize()
+  }                                                                                                                                                                                                  
+                  
+  class Owner {
+      +id : UUID
+      +nom : String
+      +prenom : String
+      +adresse : String [0..1]
+      +telephone : String [0..1]
+      +email : String
+      +createdAt : DateTime                                                                                                                                                                          
+      --
+      +anonymize()                                                                                                                                                                                   
+  }               
 
-class User {
-    +id : String <<UUID v4>>
-    +email : String
-    +name : String
-    +role : String
-    +password : String [0..1]
-    +createdAt : DateTime
-    --
-    +login()
-    +register()
-    +anonymize()
-}
-
-class Owner {
-    +id : String <<UUID v4>>
-    +nom : String
-    +prenom : String
-    +adresse : String [0..1]
-    +telephone : String [0..1]
-    +email : String
-    +createdAt : DateTime
-    --
-    +anonymize()
-}
-
-class Animal {
-    +id : String <<UUID v4>>
-    +nom : String
-    +espece : String
-    +race : String [0..1]
-    +dateNaissance : Date [0..1]
-    +remarques : String [0..1]
-    +createdAt : DateTime
-}
-
-class MedicalConsultation {
-    +id : String <<UUID v4>>
-    +dateConsultation : DateTime
-    +motif : String
-    +compteRendu : String [0..1]
-    +traitements : String [0..1]
-    +createdAt : DateTime
-}
-
-' Staff : ManyToOne (clinic_id)
-Clinic "1" --> "0..*" User : emploie (staff)\n<<clinic_id>>
-
-' Client : ManyToMany via user_clinic
-Clinic "0..*" <--> "0..*" User : rattache (client)\n<<user_clinic>>
-
-' Owner : ManyToMany via owner_clinic
-Clinic "0..*" <--> "0..*" Owner : gère\n<<owner_clinic>>
-
-' Autres relations
-Clinic "1" --> "0..*" Animal : héberge\n<<clinic_id>>
-Clinic "1" --> "0..*" MedicalConsultation : contient\n<<clinic_id>>
-
-User "1" --> "0..*" Owner : crée\n<<created_by>>
-User "1" --> "0..1" Owner : compte client lié\n<<user_id>>
-
-User "1" --> "0..*" Animal : crée\n<<created_by>>
-User "1" --> "0..*" MedicalConsultation : effectue\n<<veterinaire_id>>
-
-Owner "1" --> "0..*" Animal : possède\n<<proprietaire_id>>
-Animal "1" --> "0..*" MedicalConsultation : fait l'objet de\n<<animal_id>>
-
-@enduml
-
-
+  class Animal {
+      +id : UUID
+      +nom : String
+      +espece : String
+      +race : String [0..1]
+      +dateNaissance : Date [0..1]
+      +remarques : String [0..1]                                                                                                                                                                     
+      +createdAt : DateTime
+  }                                                                                                                                                                                                  
+                  
+  class MedicalConsultation {
+      +id : UUID
+      +dateConsultation : DateTime
+      +motif : String
+      +compteRendu : String [0..1]
+      +traitements : String [0..1]                                                                                                                                                                   
+      +createdAt : DateTime
+  }                                                                                                                                                                                                  
+                  
+  Clinic "1" -- "0..*" User : emploie (staff)
+  Clinic "0..*" -- "0..*" User : rattache (client)
+  Clinic "0..*" -- "0..*" Owner : gère                                                                                                                                                               
+  Clinic "1" -- "0..*" Animal : héberge
+  Clinic "1" -- "0..*" MedicalConsultation : contient                                                                                                                                                
+                                                                                                                                                                                                     
+  User "1" --> "0..*" Owner : crée
+  User "1" --> "0..1" Owner : compte lié                                                                                                                                                             
+  User "1" --> "0..*" Animal : crée
+  User "1" --> "0..*" MedicalConsultation : effectue
+                                                                                                                                                                                                     
+  Owner "1" --> "0..*" Animal : possède
+  Animal "1" --> "0..*" MedicalConsultation : fait l'objet de                                                                                                                                        
+                  
+  @enduml
 ' ============================================================
 ' Diagramme de séquence — Authentification JWT
 ' Melissa BEDHOMME — RNCP37873 CDA — Mai 2026
